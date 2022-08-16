@@ -14,6 +14,9 @@
             android:id="@+id/action_singInFragment_to_singUpFragment"
             app:destination="@id/singUpFragment"
             app:enterAnim="@android:anim/slide_in_left" />
+        <action
+            android:id="@+id/action_singInFragment_to_feedFragment"
+            app:destination="@id/feedFragment" />
     </fragment>
     <fragment
         android:id="@+id/singUpFragment"
@@ -25,4 +28,9 @@
             app:destination="@id/singInFragment"
             app:enterAnim="@android:anim/slide_in_left" />
     </fragment>
+    <fragment
+        android:id="@+id/feedFragment"
+        android:name="com.kursatkumsuz.onthisday.fragment.FeedFragment"
+        android:label="fragment_feed"
+        tools:layout="@layout/fragment_feed" />
 </navigation>
