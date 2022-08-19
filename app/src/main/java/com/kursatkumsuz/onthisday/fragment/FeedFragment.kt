@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.kursatkumsuz.onthisday.R
@@ -44,7 +45,7 @@ class FeedFragment : Fragment() {
     }
 
     private fun getData() {
-        val data = db.collection("posts")
+        val data = db.collection("posts").orderBy("time" , Query.Direction.ASCENDING)
 
         data.addSnapshotListener { value, error ->
             if(error != null) {
