@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.firestore.Query
@@ -15,21 +17,23 @@ import com.kursatkumsuz.onthisday.R
 import com.kursatkumsuz.onthisday.adapter.RecyclerViewAdapter
 import com.kursatkumsuz.onthisday.databinding.FragmentFeedBinding
 import com.kursatkumsuz.onthisday.model.PostModel
+import com.kursatkumsuz.onthisday.viewmodel.FeedViewModel
 
 
 class FeedFragment : Fragment() {
 
 
-    private var _binding : FragmentFeedBinding? = null
+    private var _binding: FragmentFeedBinding? = null
     private val binding get() = _binding!!
     private var db = Firebase.firestore
     private val dataList = ArrayList<PostModel>()
-    private lateinit var adapter : RecyclerViewAdapter
+    private  var adapter = RecyclerViewAdapter(arrayListOf())
+    private lateinit var viewModel: FeedViewModel
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentFeedBinding.inflate(layoutInflater , container , false)
+        _binding = FragmentFeedBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
 
@@ -41,29 +45,22 @@ class FeedFragment : Fragment() {
             Navigation.findNavController(it).navigate(action)
         }
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
-        getData()
+        //View Model
+        viewModel = ViewModelProvider(this)[FeedViewModel::class.java]
+        viewModel.getData()
+        observeLiveData()
+        binding.recyclerView.adapter = adapter
+
     }
 
-    private fun getData() {
-        val data = db.collection("posts").orderBy("time" , Query.Direction.ASCENDING)
-
-        data.addSnapshotListener { value, error ->
-            if(error != null) {
-                Toast.makeText(context , error.localizedMessage , Toast.LENGTH_LONG).show()
+    private fun observeLiveData() {
+        viewModel.dataList.observe(viewLifecycleOwner , Observer { post ->
+            post?.let {
+                println("Data $post")
+                dataList.addAll(post)
+                adapter = RecyclerViewAdapter(dataList)
             }
-            if (value != null) {
-              for (v in value) {
-                  val post = v.get("post")
-                  val data = PostModel(post.toString())
-                  dataList.add(data)
-                  adapter = RecyclerViewAdapter(dataList)
-                  binding.recyclerView.adapter = adapter
-              }
-            } else {
-                println("Data : Null")
-            }
-        }
+        })
     }
-
-
 }
+
