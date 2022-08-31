@@ -10,7 +10,7 @@ import com.google.firebase.ktx.Firebase
 import com.kursatkumsuz.onthisday.adapter.RecyclerViewAdapter
 import com.kursatkumsuz.onthisday.model.PostModel
 
-class FeedViewModel : ViewModel() {
+class FeedViewModel (application: Application) : BaseViewModel(application) {
 
     var dataList = MutableLiveData<ArrayList<PostModel>>()
     private var db = Firebase.firestore
@@ -20,7 +20,7 @@ class FeedViewModel : ViewModel() {
         val data = db.collection("posts").orderBy("time", Query.Direction.ASCENDING)
         data.addSnapshotListener { value, error ->
             if (error != null) {
-                //Toast.makeText(context, error.localizedMessage, Toast.LENGTH_LONG).show()
+                Toast.makeText(getApplication(), error.localizedMessage, Toast.LENGTH_LONG).show()
             }
             if (value != null) {
                 for (v in value) {
